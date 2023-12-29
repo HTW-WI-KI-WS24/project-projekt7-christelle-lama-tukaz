@@ -1,0 +1,30 @@
+# moodle_api.py
+import requests
+
+MOODLE_API_URL = "https://moodle.htw-berlin.de/webservice/rest/server.php"
+MOODLE_API_TOKEN = "5c1188948fdc76b65150cbee75506c8a"
+
+headers = {
+    "Authorization": f"Bearer {MOODLE_API_TOKEN}",
+    "Content-Type": "application/json",
+}
+
+def get_moodle_data():
+    params = {
+        "wstoken": MOODLE_API_TOKEN,
+        "moodlewsrestformat": "json",
+    }
+    response = requests.get(MOODLE_API_URL, params=params, headers=headers)
+    print("Get Moodle Data Response:", response.text)
+    data = response.json()
+    return data
+
+def post_moodle_data(data_to_post):
+    params = {
+        "wstoken": MOODLE_API_TOKEN,
+        "moodlewsrestformat": "json",
+    }
+    response = requests.post(MOODLE_API_URL, params=params, headers=headers, json=data_to_post)
+    print("Post Moodle Data Response:", response.text)
+    result = response.json()
+    return result

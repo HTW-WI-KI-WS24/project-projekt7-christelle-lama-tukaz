@@ -2,8 +2,19 @@ import requests
 import streamlit as st
 import openai
 import json
+from MoodleAPI import MoodleAPI  # Importieren Sie Ihre MoodleAPI-Klasse
 
 openai.api_key = "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"
+
+# Laden Sie die Konfiguration von config.ini und erstellen Sie eine Instanz der MoodleAPI
+api = MoodleAPI("config.ini")
+
+# Benutzer bei Moodle anmelden
+if api.login(api.config["moodle"]["username"], api.config["moodle"]["password"]):
+    st.success("Login erfolgreich!")
+else:
+    st.error("Fehler beim Anmelden. Überprüfen Sie Ihre Anmeldeinformationen in der config.ini-Datei.")
+
 moodle_token = "5c1188948fdc76b65150cbee75506c8a"
 moodle_url = "https://moodle.htw-berlin.de/webservice/rest/server.php"
 api_function_get_site_info = "core_webservice_get_site_info"

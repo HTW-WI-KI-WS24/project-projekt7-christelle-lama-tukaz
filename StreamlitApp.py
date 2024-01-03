@@ -2,25 +2,35 @@ import requests
 import streamlit as st
 import openai
 import json
-from MoodleAPI import MoodleAPI  # Importieren Sie Ihre MoodleAPI-Klasse
 
 openai.api_key = "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"
-
-# Laden Sie die Konfiguration von config.ini und erstellen Sie eine Instanz der MoodleAPI
-api = MoodleAPI("config.ini")
-
-# Benutzer bei Moodle anmelden
-if api.login(api.config["moodle"]["username"], api.config["moodle"]["password"]):
-    st.success("Login erfolgreich!")
-else:
-    st.error("Fehler beim Anmelden. Überprüfen Sie Ihre Anmeldeinformationen in der config.ini-Datei.")
-
-moodle_token = "5c1188948fdc76b65150cbee75506c8a"
+moodle_token = "AHAiU3b9mVbRQI9xZKStOeu14I1V71rNCqD6QnPPYFuWDYadEMNH4icRX6NVpPBm"
 moodle_url = "https://moodle.htw-berlin.de/webservice/rest/server.php"
 api_function_get_site_info = "core_webservice_get_site_info"
 api_function_assign_save_submission = "mod_assign_save_submission"
 api_function = "mod_assign_get_submissions"
 api_function_assign_save_grade = "mod_assign_save_grade"
+
+def check_moodle_connection():
+    params = {
+        "wstoken": moodle_token,
+        "wsfunction": api_function_get_site_info,
+        "moodlewsrestformat": "json",
+    }
+
+    response_data = requests.post(moodle_url, params=params).json()
+
+    if response_data and "sitename" in response_data:
+        st.success(f"Verbindung zu Moodle hergestellt. Site Name: {response_data['sitename']}")
+    else:
+        st.error("Fehler bei der Verbindung zu Moodle. Überprüfen Sie Ihre Token und URL.")
+
+def login_to_moodle(api, username, password, moodle_token):
+    # Verwenden Sie das Token für die Authentifizierung
+    if api.login(username, password):
+        st.success("Login erfolgreich!")
+    else:
+        st.error("Fehler beim Anmelden. Überprüfen Sie Ihre Anmeldeinformationen in der config.ini-Datei.")
 
 def generate_response(user_input, user_role):
     role_message = f"{user_role.capitalize()}:" if user_role else "OpenAI:"
@@ -33,23 +43,7 @@ def generate_response(user_input, user_role):
         max_tokens=150,
     )
     return response['choices'][0]['message']['content'].strip()
-
-def call_moodle_api(api_function, params=None, json_data=None):
-    params = params or {}
-    params.update({
-        "wstoken": moodle_token,
-        "wsfunction": api_function,
-        "moodlewsrestformat": "json",
-    })
-    response = requests.post(moodle_url, params=params, json=json_data)
-    
-    if response.status_code == 200:
-        return response.json()
-    else:
-        print(f"Fehler bei der API-Anfrage. Statuscode: {response.status_code}")
-        print(f"Fehlermeldung: {response.text}")
-        return None
-    
+ 
 def call_moodle_api(api_function, params=None, json_data=None):
     params = params or {}
     params.update({
@@ -292,6 +286,7 @@ def submit_assignment(user_name, document_upload, feedback_submission):
 
 def main():
     submissions_data = {}
+    check_moodle_connection()
     user_role = st.sidebar.radio("Choose your role:", ["Student", "Teacher", "Chat"])
 
     if user_role == "Student":

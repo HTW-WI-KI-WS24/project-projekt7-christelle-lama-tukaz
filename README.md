@@ -11,3 +11,4 @@ Getting Started
 3.	Investments: Dive into the "Investments" page to simulate and analyze your investment strategies.
 4.	Loan Calculator: Navigate to the "Loan Calculator" page to calculate loan payments and receive insightful recommendations.
 5.	Contact Us: Have questions or suggestions? Explore the "Contact" page.
+6.	Team: Aliyeva Tukazban s0584389, Lama Chihabi s0584531, Christelle Riamaidje Bienvenu S5802
